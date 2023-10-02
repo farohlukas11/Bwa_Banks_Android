@@ -20,8 +20,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"https://bwabank.my.id/api/\"")
 
+        buildConfigField("String", "BASE_URL", "\"https://bwabank.my.id/api/\"")
     }
 
     buildTypes {
@@ -42,7 +42,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
-        buildConfig = true
+        buildConfig =  true
     }
 }
 
@@ -66,8 +66,15 @@ dependencies {
     implementation("androidx.room:room-rxjava2:$room_version")
     testImplementation("androidx.room:room-testing:$room_version")
 
+    //Retrofit
+    val retrofit_version = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofit_version")
+    val logging_interceptor_version = "4.9.0"
+    implementation("com.squareup.okhttp3:logging-interceptor:$logging_interceptor_version")
+
     //Lifecycle KTX
-    val lifecycle_ktx_version = "2.6.1"
+    val lifecycle_ktx_version = "2.6.2"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_ktx_version")
     implementation("androidx.lifecycle:lifecycle-livedata-core-ktx:$lifecycle_ktx_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_ktx_version")
@@ -81,6 +88,7 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxjava:$rxjava_version")
     val rxandroid_version = "2.1.1"
     implementation("io.reactivex.rxjava2:rxandroid:$rxandroid_version")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:$retrofit_version")
     implementation("android.arch.lifecycle:reactivestreams:1.1.1")
     implementation("android.arch.lifecycle:extensions:1.1.1")
 
