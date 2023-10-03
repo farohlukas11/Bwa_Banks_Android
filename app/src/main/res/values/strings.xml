@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Bwa Banks Android</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_splash2">SplashActivity2</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
+    <string name="title_activity_bwa_banks_android_apps">BwaBanksAndroidApps</string>
 </resources>
