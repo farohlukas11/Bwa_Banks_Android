@@ -92,6 +92,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     //Room
     val room_version = "2.5.2"

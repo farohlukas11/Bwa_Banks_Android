@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.faroh.bwabanksandroid.core.data.Resource
 import com.faroh.bwabanksandroid.core.domain.usecase.BanksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,12 +21,12 @@ class SplashViewModel @Inject constructor(private val banksUseCase: BanksUseCase
     val userState: StateFlow<SplashState>
         get() = _userState
 
-    fun onSplashInitial(event: SplashEvent) {
+    fun onEvent(event: SplashEvent) {
         when (event) {
             is SplashEvent.OnSplashInitial -> {
                 viewModelScope.launch {
                     val result = banksUseCase.checkUser("").toLiveData()
-
+                    delay(2000)
                     when (result.value) {
                         is Resource.Success -> _userState.value = SplashState.Authenticated
                         is Resource.Loading -> _userState.value = SplashState.Unknown
@@ -36,6 +37,4 @@ class SplashViewModel @Inject constructor(private val banksUseCase: BanksUseCase
             }
         }
     }
-
-
 }

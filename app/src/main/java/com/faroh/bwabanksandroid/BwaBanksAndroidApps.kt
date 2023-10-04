@@ -6,15 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.faroh.bwabanksandroid.ui.navigation.Screen
+import com.faroh.bwabanksandroid.ui.navigation.AuthNavigation
 import com.faroh.bwabanksandroid.ui.theme.BwaBanksAndroidTheme
-import com.faroh.bwabanksandroid.view.signin.SignInActivity
-import com.faroh.bwabanksandroid.view.signup.SignUpActivity
 import com.faroh.bwabanksandroid.view.splash.SplashActivity
 import com.faroh.bwabanksandroid.view.splash.SplashEvent
 import com.faroh.bwabanksandroid.view.splash.SplashState
@@ -29,7 +23,7 @@ class BwaBanksAndroidApps : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        splashViewModel.onSplashInitial(SplashEvent.OnSplashInitial)
+        splashViewModel.onEvent(SplashEvent.OnSplashInitial)
 
         setContent {
             BwaBanksAndroidTheme {
@@ -44,26 +38,11 @@ class BwaBanksAndroidApps : ComponentActivity() {
                             }
 
                             is SplashState.Unauthenticated -> {
-
+                                AuthNavigation(navController = navController)
                             }
 
-                            else -> {}
-                        }
-
-                        NavHost(
-                            navController = navController,
-                            startDestination = Screen.Splash.route
-                        ) {
-                            navigation(startDestination = Screen.Splash.route, route = "auth") {
-                                composable(Screen.Splash.route) {
-                                    SplashActivity()
-                                }
-                                composable(Screen.SignIn.route) {
-                                    SignInActivity()
-                                }
-                                composable(Screen.SignUp.route) {
-                                    SignUpActivity()
-                                }
+                            else -> {
+                                AuthNavigation(navController = navController)
                             }
                         }
                     }
