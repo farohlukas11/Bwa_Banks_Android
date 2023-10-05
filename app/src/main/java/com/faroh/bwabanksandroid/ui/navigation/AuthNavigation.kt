@@ -20,10 +20,26 @@ fun AuthNavigation(
         startDestination = Screen.SignIn.route
     ) {
         composable(Screen.SignIn.route) {
-            SignInActivity(signInViewModel = hiltViewModel())
+            SignInActivity(
+                signInViewModel = hiltViewModel(),
+                toSignUp = { navController.navigate(Screen.SignUp.route) },
+                toHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.SignIn.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+            )
         }
         composable(Screen.SignUp.route) {
-            SignUpActivity()
+            SignUpActivity(
+                signUpViewModel = hiltViewModel(),
+                toSignIn = { navController.navigate(Screen.SignIn.route) },
+                toUploadPic = {
+
+                }
+            )
         }
     }
 }

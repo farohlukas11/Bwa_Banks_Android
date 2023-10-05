@@ -25,9 +25,9 @@ class SplashViewModel @Inject constructor(private val banksUseCase: BanksUseCase
         when (event) {
             is SplashEvent.OnSplashInitial -> {
                 viewModelScope.launch {
-                    val result = banksUseCase.checkUser("").toLiveData()
+                    val result = banksUseCase.checkUser("").toLiveData().value
                     delay(2000)
-                    when (result.value) {
+                    when (result) {
                         is Resource.Success -> _userState.value = SplashState.Authenticated
                         is Resource.Loading -> _userState.value = SplashState.Unknown
                         is Resource.Error -> _userState.value = SplashState.Unauthenticated
