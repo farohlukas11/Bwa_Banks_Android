@@ -66,8 +66,8 @@ class SignUpViewModel @Inject constructor(private val useCase: BanksUseCase) : V
                 email = registerState.value.email!!,
                 password = registerState.value.password!!,
                 pin = registerState.value.pin!!,
-                profilePicture = registerState.value.profilePicture!!,
-                ktp = registerState.value.ktp!!,
+                profilePicture = registerState.value.profilePicture,
+                ktp = registerState.value.ktp,
             )
         ).toLiveData().value
 
