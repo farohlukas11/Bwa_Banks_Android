@@ -8,111 +8,51 @@ import com.faroh.bwabanksandroid.core.data.source.remote.response.UserLogoutResp
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserResponse
 import com.faroh.bwabanksandroid.core.domain.model.LoginBody
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
 
-    fun userRegister(registerBody: RegisterBody): Flowable<ApiResponse<UserResponse>> {
-        val result = PublishSubject.create<ApiResponse<UserResponse>>()
-        val compositeDisposable = CompositeDisposable()
-
-        val register = apiService.registerUser(registerBody)
-            .observeOn(Schedulers.computation())
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe(
-                { response ->
-                    result.onNext(if (response != null) ApiResponse.Success(response) else ApiResponse.Empty)
-                }, { error ->
-                    result.onNext(ApiResponse.Error(error.message.toString()))
-                    Log.e("USER REGISTER", error.toString())
-                }
-            )
-
-        compositeDisposable.add(register)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+    suspend fun registerUser(registerBody: RegisterBody): Flow<ApiResponse<UserResponse>> = flow {
+        try {
+            val register = apiService.registerUser(registerBody)
+            emit(if (register != null) ApiResponse.Success(register) else ApiResponse.Empty)
+        } catch (e: Exception) {
+            emit(ApiResponse.Error(e.message.toString()))
+            Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
+        }
     }
 
-    fun userLogin(loginBody: LoginBody): Flowable<ApiResponse<UserResponse>> {
-        val result = PublishSubject.create<ApiResponse<UserResponse>>()
-        val compositeDisposable = CompositeDisposable()
-
-        val login = apiService.loginUser(loginBody)
-            .observeOn(Schedulers.computation())
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe(
-                { response ->
-                    result.onNext(if (response != null) ApiResponse.Success(response) else ApiResponse.Empty)
-                }, { error ->
-                    result.onNext(ApiResponse.Error(error.message.toString()))
-                    Log.e("USER LOGIN", error.toString())
-                }
-            )
-
-        compositeDisposable.add(login)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+    suspend fun loginUser(loginBody: LoginBody): Flow<ApiResponse<UserResponse>> = flow {
+        try {
+            val login = apiService.loginUser(loginBody)
+            emit(if (login != null) ApiResponse.Success(login) else ApiResponse.Empty)
+        } catch (e: Exception) {
+            emit(ApiResponse.Error(e.message.toString()))
+            Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
+        }
     }
 
-    fun userLogout(token: String): Flowable<ApiResponse<UserLogoutResponse>> {
-        val result = PublishSubject.create<ApiResponse<UserLogoutResponse>>()
-        val compositeDisposable = CompositeDisposable()
-
-        val logout = apiService.logoutUser(token)
-            .observeOn(Schedulers.computation())
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe(
-                { response ->
-                    result.onNext(if (response != null) ApiResponse.Success(response) else ApiResponse.Empty)
-                }, { error ->
-                    result.onNext(ApiResponse.Error(error.message.toString()))
-                    Log.e("USER LOGOUT", error.toString())
-                }
-            )
-
-        compositeDisposable.add(logout)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+    suspend fun logoutUser(token: String): Flow<ApiResponse<UserLogoutResponse>> = flow {
+        try {
+            val logout = apiService.logoutUser(token)
+            emit(if (logout != null) ApiResponse.Success(logout) else ApiResponse.Empty)
+        } catch (e: Exception) {
+            emit(ApiResponse.Error(e.message.toString()))
+            Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
+        }
     }
 
-    fun checkUser(email: String): Flowable<ApiResponse<CheckUserResponse>> {
-        val result = PublishSubject.create<ApiResponse<CheckUserResponse>>()
-        val compositeDisposable = CompositeDisposable()
-
-        val checkUser = apiService.checkEmail(email)
-            .observeOn(Schedulers.computation())
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe(
-                { response ->
-                    result.onNext(if (response != null) ApiResponse.Success(response) else ApiResponse.Empty)
-                }, { error ->
-                    result.onNext(ApiResponse.Error(error.message.toString()))
-                    Log.e("USER CHECK", error.toString())
-                }
-            )
-
-        compositeDisposable.add(checkUser)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+    suspend fun checkEmailUser(email: String): Flow<ApiResponse<CheckUserResponse>> = flow {
+        try {
+            val checkEmail = apiService.checkEmail(email)
+            emit(if (checkEmail != null) ApiResponse.Success(checkEmail) else ApiResponse.Empty)
+        } catch (e: Exception) {
+            emit(ApiResponse.Error(e.message.toString()))
+            Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
+        }
     }
 }

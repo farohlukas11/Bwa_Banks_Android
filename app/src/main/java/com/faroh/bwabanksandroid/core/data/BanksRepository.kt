@@ -2,130 +2,67 @@ package com.faroh.bwabanksandroid.core.data
 
 import com.faroh.bwabanksandroid.core.data.source.remote.RemoteDataSource
 import com.faroh.bwabanksandroid.core.data.source.remote.response.ApiResponse
+import com.faroh.bwabanksandroid.core.data.source.remote.response.CheckUserResponse
+import com.faroh.bwabanksandroid.core.data.source.remote.response.UserLogoutResponse
+import com.faroh.bwabanksandroid.core.data.source.remote.response.UserResponse
 import com.faroh.bwabanksandroid.core.domain.model.LoginBody
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
 import com.faroh.bwabanksandroid.core.domain.model.UserModel
 import com.faroh.bwabanksandroid.core.domain.repository.IBanksRepository
 import com.faroh.bwabanksandroid.core.utils.DataMapper
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class BanksRepository @Inject constructor(private val remoteDataSource: RemoteDataSource) :
     IBanksRepository {
-    override fun registerUser(registerBody: RegisterBody): Flowable<Resource<UserModel>> {
-        val result = PublishSubject.create<Resource<UserModel>>()
-        val compositeDisposable = CompositeDisposable()
-
-        result.onNext(Resource.Loading())
-        val register = remoteDataSource.userRegister(registerBody)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe {
-                when (it) {
-                    is ApiResponse.Success -> result.onNext(
-                        Resource.Success(
-                            DataMapper.mapUserResponseToModel(
-                                it.data
-                            )
-                        )
-                    )
-
-                    is ApiResponse.Empty -> result.onNext(Resource.Success(UserModel()))
-                    is ApiResponse.Error -> result.onNext(Resource.Error(it.errorMessage))
-                }
+    override fun registerUser(registerBody: RegisterBody): Flow<Resource<UserModel>> {
+        return object : NetworkOnlyResource<UserModel, UserResponse>() {
+            override fun loadFromNetwork(data: UserResponse): Flow<UserModel> {
+                return DataMapper.mapUserResponseToModel(data)
             }
 
-        compositeDisposable.add(register)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+            override suspend fun createCall(): Flow<ApiResponse<UserResponse>> {
+                return remoteDataSource.registerUser(registerBody)
+            }
+        }.asFlow()
     }
 
-    override fun loginUser(loginBody: LoginBody): Flowable<Resource<UserModel>> {
-        val result = PublishSubject.create<Resource<UserModel>>()
-        val compositeDisposable = CompositeDisposable()
-
-        result.onNext(Resource.Loading())
-        val login = remoteDataSource.userLogin(loginBody)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe {
-                when (it) {
-                    is ApiResponse.Success -> result.onNext(
-                        Resource.Success(
-                            DataMapper.mapUserResponseToModel(
-                                it.data
-                            )
-                        )
-                    )
-
-                    is ApiResponse.Empty -> result.onNext(Resource.Success(UserModel()))
-                    is ApiResponse.Error -> result.onNext(Resource.Error(it.errorMessage))
-                }
+    override fun loginUser(loginBody: LoginBody): Flow<Resource<UserModel>> {
+        return object : NetworkOnlyResource<UserModel, UserResponse>() {
+            override fun loadFromNetwork(data: UserResponse): Flow<UserModel> {
+                return DataMapper.mapUserResponseToModel(data)
             }
 
-        compositeDisposable.add(login)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+            override suspend fun createCall(): Flow<ApiResponse<UserResponse>> {
+                return remoteDataSource.loginUser(loginBody)
+            }
+        }.asFlow()
     }
 
-    override fun logoutUser(token: String): Flowable<Resource<String>> {
-        val result = PublishSubject.create<Resource<String>>()
-        val compositeDisposable = CompositeDisposable()
-
-        result.onNext(Resource.Loading())
-        val logout = remoteDataSource.userLogout(token)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe {
-                when (it) {
-                    is ApiResponse.Success -> result.onNext(Resource.Success(it.data.message!!))
-                    is ApiResponse.Empty -> result.onNext(Resource.Success(""))
-                    is ApiResponse.Error -> result.onNext(Resource.Error(it.errorMessage))
-                }
+    override fun logoutUser(token: String): Flow<Resource<String>> {
+        return object : NetworkOnlyResource<String, UserLogoutResponse>() {
+            override fun loadFromNetwork(data: UserLogoutResponse): Flow<String> {
+                return flowOf(data.message!!)
             }
 
-        compositeDisposable.add(logout)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+            override suspend fun createCall(): Flow<ApiResponse<UserLogoutResponse>> {
+                return remoteDataSource.logoutUser(token)
+            }
+        }.asFlow()
     }
 
-    override fun checkUser(email: String): Flowable<Resource<Boolean>> {
-        val result = PublishSubject.create<Resource<Boolean>>()
-        val compositeDisposable = CompositeDisposable()
-
-        result.onNext(Resource.Loading())
-        val checkUser = remoteDataSource.checkUser(email)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .take(1)
-            .doOnComplete {
-                compositeDisposable.dispose()
-            }
-            .subscribe {
-                when (it) {
-                    is ApiResponse.Success -> result.onNext(Resource.Success(it.data.isEmailExist!!))
-                    is ApiResponse.Empty -> result.onNext(Resource.Success(false))
-                    is ApiResponse.Error -> result.onNext(Resource.Error(it.errorMessage))
-                }
+    override fun checkUser(email: String): Flow<Resource<Boolean>> {
+        return object : NetworkOnlyResource<Boolean, CheckUserResponse>() {
+            override fun loadFromNetwork(data: CheckUserResponse): Flow<Boolean> {
+                return flowOf(data.isEmailExist!!)
             }
 
-        compositeDisposable.add(checkUser)
-        return result.toFlowable(BackpressureStrategy.BUFFER)
+            override suspend fun createCall(): Flow<ApiResponse<CheckUserResponse>> {
+                return remoteDataSource.checkEmailUser(email)
+            }
+        }.asFlow()
     }
 }

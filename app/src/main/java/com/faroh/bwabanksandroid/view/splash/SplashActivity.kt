@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,11 +26,28 @@ import com.faroh.bwabanksandroid.ui.theme.BwaBanksAndroidTheme
 import com.faroh.bwabanksandroid.ui.theme.darkBackgroundColor
 import com.faroh.bwabanksandroid.ui.theme.lightBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashActivity() {
+fun SplashActivity(
+    splashViewModel: SplashViewModel,
+    toHome: () -> Unit,
+    toSignIn: () -> Unit
+) {
     Surface(modifier = Modifier.fillMaxSize(), color = darkBackgroundColor) {
         SplashContent()
+        splashViewModel.onEvent(SplashEvent.OnSplashInitial)
+
+        splashViewModel.userState.collectAsState().value.let {
+            LaunchedEffect(Unit) {
+                delay(2000)
+                when (it) {
+                    is SplashState.Authenticated -> toHome.invoke()
+                    is SplashState.Unauthenticated -> toSignIn.invoke()
+                    is SplashState.Unknown -> toSignIn.invoke()
+                }
+            }
+        }
     }
 }
 

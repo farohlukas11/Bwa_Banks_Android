@@ -17,35 +17,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BwaBanksAndroidApps : ComponentActivity() {
-
-    private val splashViewModel: SplashViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        splashViewModel.onEvent(SplashEvent.OnSplashInitial)
-
         setContent {
             BwaBanksAndroidTheme {
                 Surface {
                     val navController = rememberNavController()
-                    SplashActivity()
-
-                    splashViewModel.userState.collectAsState(initial = SplashState.Unknown).value.let {
-                        when (it) {
-                            is SplashState.Authenticated -> {
-
-                            }
-
-                            is SplashState.Unauthenticated -> {
-                                AuthNavigation(navController = navController)
-                            }
-
-                            else -> {
-                                AuthNavigation(navController = navController)
-                            }
-                        }
-                    }
+                    AuthNavigation(navController = navController)
                 }
             }
         }

@@ -79,12 +79,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.0-alpha06")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.0-alpha06")
 
-    //Glide
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-
     //compose
     implementation("androidx.ui:ui-tooling:1.0.0-alpha07")
-    implementation("androidx.compose.runtime:runtime:1.5.2")
+    implementation("androidx.compose.runtime:runtime:1.5.3")
     implementation("androidx.compose.compiler:compiler:1.5.3")
     implementation("androidx.compose.runtime:runtime-rxjava2:1.5.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
@@ -93,6 +90,12 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.3")
+
+    //Coroutine Flow
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
 
     //Room
     val room_version = "2.5.2"

@@ -16,20 +16,10 @@
         android:theme="@style/Theme.BwaBanksAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".BwaBanksAndroidApps"
-            android:exported="false"
-            android:label="@string/title_activity_bwa_banks_android_apps"
-            android:theme="@style/Theme.BwaBanksAndroid" />
-        <activity
-            android:name=".view.home.HomeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_home"
-            android:theme="@style/Theme.BwaBanksAndroid" />
-        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".view.splash.SplashActivity"
+            android:name=".BwaBanksAndroidApps"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -6,5 +6,6 @@ sealed class Screen(val route: String) {
     object SignUp : Screen("signup")
     object Home : Screen("home")
     object UploadPicture : Screen("upload-picture")
-    object UploadKtp: Screen("Uupload-ktp")
+    object UploadKtp : Screen("upload-ktp")
+    object SuccessSignUp : Screen("success-signup")
 }

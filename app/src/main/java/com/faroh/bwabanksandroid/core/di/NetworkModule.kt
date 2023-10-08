@@ -1,7 +1,7 @@
 package com.faroh.bwabanksandroid.core.di
 
+import com.faroh.bwabanksandroid.BuildConfig
 import com.faroh.bwabanksandroid.core.data.source.remote.network.ApiService
-import com.google.gson.internal.GsonBuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,7 +9,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
@@ -26,9 +25,8 @@ class NetworkModule {
 
     @Provides
     fun provideApiService(client: OkHttpClient): ApiService = Retrofit.Builder()
-        .baseUrl("https://bwabank.my.id/api/")
+        .baseUrl(BuildConfig.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .client(client)
         .build()
         .create(ApiService::class.java)

@@ -5,7 +5,6 @@ import com.faroh.bwabanksandroid.core.data.source.remote.response.UserLogoutResp
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserResponse
 import com.faroh.bwabanksandroid.core.domain.model.LoginBody
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
-import io.reactivex.Flowable
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -13,23 +12,22 @@ import retrofit2.http.POST
 interface ApiService {
 
     @POST("register")
-    fun registerUser(
+    suspend fun registerUser(
         @Body registerBody: RegisterBody
-    ): Flowable<UserResponse>
+    ): UserResponse?
 
     @POST("login")
-    fun loginUser(
+    suspend fun loginUser(
         @Body loginBody: LoginBody
-    ): Flowable<UserResponse>
+    ): UserResponse?
 
     @POST("logout")
-    fun logoutUser(
+    suspend fun logoutUser(
         @Header("Authorization") token: String
-    ): Flowable<UserLogoutResponse>
+    ): UserLogoutResponse?
 
     @POST("is-email-exist")
-    fun checkEmail(
+    suspend fun checkEmail(
         @Body email: String
-    ): Flowable<CheckUserResponse>
-
+    ): CheckUserResponse?
 }
