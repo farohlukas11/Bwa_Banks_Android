@@ -34,52 +34,52 @@ class SignUpViewModel @Inject constructor(private val useCase: BanksUseCase) : V
             is SignUpEvent.PictureChanged -> registerState.value.copy(profilePicture = event.picture)
             is SignUpEvent.ktpChanged -> registerState.value.copy(ktp = event.ktp)
             is SignUpEvent.OnSignUpCheckEmailEvent -> {
-                _signUpState.value = SignUpState.SignUpLoading
-                if (checkEmailFilled) checkEmailUser()
-                else _signUpState.value = SignUpState.FieldHasNull
+//                _signUpState.value = SignUpState.SignUpLoading
+//                if (checkEmailFilled) checkEmailUser()
+//                else _signUpState.value = SignUpState.FieldHasNull
             }
 
             is SignUpEvent.OnSignUpEvent -> {
-                _signUpState.value = SignUpState.SignUpLoading
-                if (checkEmailFilled || registerState.value.pin != null) registerUser()
-                else _signUpState.value = SignUpState.FieldHasNull
+//                _signUpState.value = SignUpState.SignUpLoading
+//                if (checkEmailFilled || registerState.value.pin != null) registerUser()
+//                else _signUpState.value = SignUpState.FieldHasNull
             }
         }
     }
 
-    private fun checkEmailUser() {
-        when (val result = useCase.checkUser(registerState.value.email!!).toLiveData().value) {
-            is Resource.Success -> _signUpState.value =
-                if (!result.data!!) SignUpState.SignUpSuccess else SignUpState.SignUpEmpty
-
-            is Resource.Error -> _signUpState.value =
-                SignUpState.SignUpError(result.message.toString())
-
-            else -> _signUpState.value = SignUpState.SignUpLoading
-        }
-    }
-
-    private fun registerUser() {
-        val result = useCase.registerUser(
-            RegisterBody(
-                name = registerState.value.fullName!!,
-                email = registerState.value.email!!,
-                password = registerState.value.password!!,
-                pin = registerState.value.pin!!,
-                profilePicture = registerState.value.profilePicture,
-                ktp = registerState.value.ktp,
-            )
-        ).toLiveData().value
-
-        when (result) {
-            is Resource.Success -> _signUpState.value = if (result.data != null) {
-                SignUpState.SignUpSuccess
-            } else SignUpState.SignUpEmpty
-
-            is Resource.Error -> _signUpState.value =
-                SignUpState.SignUpError(result.message.toString())
-
-            else -> _signUpState.value = SignUpState.SignUpLoading
-        }
-    }
+//    private fun checkEmailUser() {
+//        when (val result = useCase.checkUser(registerState.value.email!!).toLiveData().value) {
+//            is Resource.Success -> _signUpState.value =
+//                if (!result.data!!) SignUpState.SignUpSuccess else SignUpState.SignUpEmpty
+//
+//            is Resource.Error -> _signUpState.value =
+//                SignUpState.SignUpError(result.message.toString())
+//
+//            else -> _signUpState.value = SignUpState.SignUpLoading
+//        }
+//    }
+//
+//    private fun registerUser() {
+//        val result = useCase.registerUser(
+//            RegisterBody(
+//                name = registerState.value.fullName!!,
+//                email = registerState.value.email!!,
+//                password = registerState.value.password!!,
+//                pin = registerState.value.pin!!,
+//                profilePicture = registerState.value.profilePicture,
+//                ktp = registerState.value.ktp,
+//            )
+//        ).toLiveData().value
+//
+//        when (result) {
+//            is Resource.Success -> _signUpState.value = if (result.data != null) {
+//                SignUpState.SignUpSuccess
+//            } else SignUpState.SignUpEmpty
+//
+//            is Resource.Error -> _signUpState.value =
+//                SignUpState.SignUpError(result.message.toString())
+//
+//            else -> _signUpState.value = SignUpState.SignUpLoading
+//        }
+//    }
 }

@@ -8,8 +8,10 @@ import com.faroh.bwabanksandroid.core.data.source.remote.response.UserLogoutResp
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserResponse
 import com.faroh.bwabanksandroid.core.domain.model.LoginBody
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,17 +26,17 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
             emit(ApiResponse.Error(e.message.toString()))
             Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     suspend fun loginUser(loginBody: LoginBody): Flow<ApiResponse<UserResponse>> = flow {
         try {
             val login = apiService.loginUser(loginBody)
             emit(if (login != null) ApiResponse.Success(login) else ApiResponse.Empty)
         } catch (e: Exception) {
-            emit(ApiResponse.Error(e.message.toString()))
+            emit(ApiResponse.Error(e.toString()))
             Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     suspend fun logoutUser(token: String): Flow<ApiResponse<UserLogoutResponse>> = flow {
         try {
@@ -44,7 +46,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
             emit(ApiResponse.Error(e.message.toString()))
             Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     suspend fun checkEmailUser(email: String): Flow<ApiResponse<CheckUserResponse>> = flow {
         try {
@@ -54,5 +56,5 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
             emit(ApiResponse.Error(e.message.toString()))
             Log.e(RemoteDataSource::class.java.simpleName, e.localizedMessage!!)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
