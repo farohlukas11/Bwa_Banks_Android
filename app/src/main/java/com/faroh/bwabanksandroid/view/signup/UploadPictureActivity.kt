@@ -5,6 +5,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -28,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +45,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.faroh.bwabanksandroid.R
+import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
 import com.faroh.bwabanksandroid.ui.components.ButtonComponent
 import com.faroh.bwabanksandroid.ui.components.TextFieldComponent
 import com.faroh.bwabanksandroid.ui.theme.BwaBanksAndroidTheme
@@ -55,24 +59,50 @@ import com.faroh.bwabanksandroid.ui.theme.whiteColor
 
 @Composable
 fun UploadPictureActivity(
+    navController: NavController,
     signUpViewModel: SignUpViewModel,
     toUploadKtp: () -> Unit
 ) {
+    val dataRegBody: MutableState<RegisterBody?> = remember {
+        mutableStateOf(
+            navController.previousBackStackEntry?.savedStateHandle?.get(
+                "reg_body"
+            )
+        )
+    }
+    val context = LocalContext.current
+
+    if (dataRegBody.value != null) {
+        Toast.makeText(LocalContext.current, dataRegBody.value.toString(), Toast.LENGTH_LONG).show()
+    } else {
+        Toast.makeText(LocalContext.current, "Data null", Toast.LENGTH_LONG).show()
+
+    }
+
     Surface(modifier = Modifier.fillMaxSize(), color = lightBackgroundColor) {
         UploadPictureContent(
+            name = dataRegBody.value?.name,
             imagePathChange = {
-                signUpViewModel.onEvent(SignUpEvent.PictureChanged(it))
+                dataRegBody.value = dataRegBody.value?.copy(profilePicture = it)
             },
             pinChange = {
-                signUpViewModel.onEvent(SignUpEvent.PinChanged(it))
+                dataRegBody.value = dataRegBody.value?.copy(pin = it)
             },
-            toUploadKtp = toUploadKtp,
+            toUploadKtp = {
+                Toast.makeText(
+                    context,
+                    dataRegBody.value.toString(),
+                    Toast.LENGTH_LONG
+                ).show()
+
+            },
         )
     }
 }
 
 @Composable
 fun UploadPictureContent(
+    name: String?,
     imagePathChange: (String?) -> Unit,
     pinChange: (Int) -> Unit,
     toUploadKtp: () -> Unit
@@ -152,7 +182,7 @@ fun UploadPictureContent(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(120.dp)
-                                    .clip(CircleShape)
+                                    .clip(CircleShape),
                             )
                         }
                     } else Image(
@@ -165,7 +195,7 @@ fun UploadPictureContent(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Shayna Hanna",
+                    text = if (name.isNullOrBlank()) "" else name,
                     style = blackTextStyle.copy(fontSize = 18.sp, fontWeight = medium)
                 )
                 Spacer(modifier = Modifier.height(30.dp))
@@ -191,7 +221,8 @@ fun UploadPictureContent(
 fun UploadPictureContentPrev() {
     BwaBanksAndroidTheme {
         Surface(color = lightBackgroundColor) {
-            UploadPictureContent(imagePathChange = {}, pinChange = {}) {
+
+            UploadPictureContent(name = "", imagePathChange = {}, pinChange = {}) {
 
             }
         }

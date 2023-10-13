@@ -69,7 +69,7 @@ fun SignInActivity(
         mutableStateOf(false)
     }
 
-    Scaffold { innerPadding ->
+    Scaffold(containerColor = lightBackgroundColor) { innerPadding ->
         SignInContent(
             innerPadding = innerPadding,
             usernameChange = {

@@ -3,6 +3,7 @@ package com.faroh.bwabanksandroid.core.data.source.remote.network
 import com.faroh.bwabanksandroid.core.data.source.remote.response.CheckUserResponse
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserLogoutResponse
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserResponse
+import com.faroh.bwabanksandroid.core.domain.model.CheckEmail
 import com.faroh.bwabanksandroid.core.domain.model.LoginBody
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
 import retrofit2.http.Body
@@ -28,6 +29,6 @@ interface ApiService {
 
     @POST("is-email-exist")
     suspend fun checkEmail(
-        @Body email: String
+        @Body checkEmail: CheckEmail
     ): CheckUserResponse?
 }

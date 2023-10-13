@@ -1,5 +1,6 @@
 package com.faroh.bwabanksandroid.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -12,6 +13,7 @@ import com.faroh.bwabanksandroid.view.signup.SuccessSignUpActivity
 import com.faroh.bwabanksandroid.view.signup.UploadKtpActivity
 import com.faroh.bwabanksandroid.view.signup.UploadPictureActivity
 import com.faroh.bwabanksandroid.view.splash.SplashActivity
+import com.google.gson.Gson
 
 @Composable
 fun AuthNavigation(
@@ -55,18 +57,24 @@ fun AuthNavigation(
                 signUpViewModel = hiltViewModel(),
                 toSignIn = { navController.navigate(Screen.SignIn.route) },
                 toUploadPic = {
+                    navController.currentBackStackEntry?.savedStateHandle?.apply {
+                        set("reg_body", it)
+                    }
                     navController.navigate(Screen.UploadPicture.route)
                 }
             )
         }
         composable(Screen.UploadPicture.route) {
-            UploadPictureActivity(signUpViewModel = hiltViewModel(), toUploadKtp = {
-                navController.navigate(Screen.UploadKtp.route) {
-                    popUpTo(Screen.UploadPicture.route) {
-                        inclusive = true
+            UploadPictureActivity(
+                navController = navController,
+                signUpViewModel = hiltViewModel(),
+                toUploadKtp = {
+                    navController.navigate(Screen.UploadKtp.route) {
+                        popUpTo(Screen.UploadPicture.route) {
+                            inclusive = true
+                        }
                     }
-                }
-            })
+                })
         }
         composable(Screen.UploadKtp.route) {
             UploadKtpActivity(signUpViewModel = hiltViewModel()) {

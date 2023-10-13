@@ -6,6 +6,7 @@ import com.faroh.bwabanksandroid.core.data.source.remote.response.ApiResponse
 import com.faroh.bwabanksandroid.core.data.source.remote.response.CheckUserResponse
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserLogoutResponse
 import com.faroh.bwabanksandroid.core.data.source.remote.response.UserResponse
+import com.faroh.bwabanksandroid.core.domain.model.CheckEmail
 import com.faroh.bwabanksandroid.core.domain.model.LoginBody
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +51,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
 
     suspend fun checkEmailUser(email: String): Flow<ApiResponse<CheckUserResponse>> = flow {
         try {
-            val checkEmail = apiService.checkEmail(email)
+            val checkEmail = apiService.checkEmail(CheckEmail(email))
             emit(if (checkEmail != null) ApiResponse.Success(checkEmail) else ApiResponse.Empty)
         } catch (e: Exception) {
             emit(ApiResponse.Error(e.message.toString()))

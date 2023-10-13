@@ -62,23 +62,11 @@ fun UploadKtpActivity(
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = lightBackgroundColor) {
 
-        signUpViewModel.signUpState.collectAsState().value.let {
-            when (it) {
-                is SignUpState.SignUpSuccess -> toSuccessSignUp.invoke()
-                is SignUpState.SignUpEmpty -> {}
-                is SignUpState.SignUpError -> {}
-                is SignUpState.SignUpLoading -> CircularProgressIndicator(LocalContext.current)
-                is SignUpState.FieldHasNull -> {}
-                else -> {}
-            }
-        }
 
         UploadKtpContent(
             imageKtpChange = {
-                signUpViewModel.onEvent(SignUpEvent.ktpChanged(it))
             },
             signUp = {
-                signUpViewModel.onEvent(SignUpEvent.OnSignUpEvent)
             }
         )
     }
