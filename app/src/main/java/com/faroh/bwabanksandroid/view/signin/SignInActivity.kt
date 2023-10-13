@@ -3,8 +3,8 @@ package com.faroh.bwabanksandroid.view.signin
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,9 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,60 +54,71 @@ fun SignInActivity(
     toSignUp: () -> Unit,
     toHome: () -> Unit
 ) {
-    Surface(modifier = Modifier.fillMaxSize(), color = lightBackgroundColor) {
-        val signInVm =
-            signInViewModel.signInState.collectAsState()
-        val context = LocalContext.current
+    val signInVm =
+        signInViewModel.signInState.collectAsState()
+    val signInToast = signInViewModel.toastMessage
+    val context = LocalContext.current
 
-        var username by remember {
-            mutableStateOf("")
-        }
-        var password by remember {
-            mutableStateOf("")
-        }
+    var username by remember {
+        mutableStateOf("")
+    }
+    var password by remember {
+        mutableStateOf("")
+    }
+    var showProgressBarr by remember {
+        mutableStateOf(false)
+    }
 
-        signInVm.value.let {
-            when (it) {
-                is Resource.Loading -> ProgressBarComponent()
-                is Resource.Success -> {
-                    toHome.invoke()
+    Scaffold { innerPadding ->
+        SignInContent(
+            innerPadding = innerPadding,
+            usernameChange = {
+                username = it
+            }, passwordChange = {
+                password = it
+            }, onSignIn = {
+                if (username.isNotEmpty() && password.isNotEmpty()) signInViewModel.loginUser(
+                    LoginBody(email = username, password = password)
+                )
+                else signInViewModel.setMessage("Field tidak boleh Kosong!")
+            }, toSignUp = {
+                toSignUp.invoke()
+            })
 
+        if (showProgressBarr) ProgressBarComponent()
+
+        LaunchedEffect(signInVm.value) {
+            signInVm.value?.let {
+                when (it) {
+                    is Resource.Loading -> showProgressBarr = true
+                    is Resource.Success -> {
+                        showProgressBarr = false
+                        toHome.invoke()
+                    }
+
+                    is Resource.Error -> {
+                        showProgressBarr = false
+                        signInViewModel.setMessage(it.message!!)
+                    }
                 }
-
-                is Resource.Error -> {
-                    Toast.makeText(
-                        context,
-                        it.message.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                else -> {}
             }
         }
 
-        SignInContent(usernameChange = {
-            username = it
-        }, passwordChange = {
-            password = it
-        }, onSignIn = {
-            if (username.isNotEmpty() && password.isNotEmpty()) {
-                signInViewModel.loginUser(LoginBody(email = username, password = password))
-            } else {
+        LaunchedEffect(Unit) {
+            signInToast.collect {
                 Toast.makeText(
                     context,
-                    "Field tidak boleh Kosong!",
+                    it,
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }, toSignUp = {
-            toSignUp.invoke()
-        })
+        }
     }
 }
 
 @Composable
 fun SignInContent(
+    innerPadding: PaddingValues,
     usernameChange: (String) -> Unit,
     passwordChange: (String) -> Unit,
     onSignIn: () -> Unit,
@@ -113,9 +126,13 @@ fun SignInContent(
 ) {
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
+            .padding(
+                vertical = innerPadding.calculateTopPadding(),
+                horizontal = 24.dp
+            )
             .fillMaxWidth()
-            .padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.img_logo_light),
@@ -189,7 +206,13 @@ fun SignInContent(
 fun SignInActivityPreview() {
     BwaBanksAndroidTheme {
         Surface(color = lightBackgroundColor) {
-            SignInContent(passwordChange = {}, usernameChange = {}, toSignUp = {}, onSignIn = {})
+            SignInContent(
+                passwordChange = {},
+                usernameChange = {},
+                toSignUp = {},
+                onSignIn = {},
+                innerPadding = PaddingValues()
+            )
         }
     }
 }

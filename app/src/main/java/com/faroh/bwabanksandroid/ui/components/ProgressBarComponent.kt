@@ -17,6 +17,6 @@ fun ProgressBarComponent() {
         Modifier
             .fillMaxSize()
             .wrapContentSize(Alignment.Center)
-            .size(80.dp)
+            .size(50.dp)
     )
 }
