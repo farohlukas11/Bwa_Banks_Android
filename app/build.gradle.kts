@@ -91,6 +91,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.5.3")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
 
     //Coroutine Flow
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")

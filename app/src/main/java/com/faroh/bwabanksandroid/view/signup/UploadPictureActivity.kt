@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -46,8 +47,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.faroh.bwabanksandroid.R
 import com.faroh.bwabanksandroid.core.domain.model.RegisterBody
+import com.faroh.bwabanksandroid.core.utils.EncodeImage64
 import com.faroh.bwabanksandroid.ui.components.ButtonComponent
 import com.faroh.bwabanksandroid.ui.components.TextFieldComponent
 import com.faroh.bwabanksandroid.ui.theme.BwaBanksAndroidTheme
@@ -71,14 +74,6 @@ fun UploadPictureActivity(
         )
     }
     val context = LocalContext.current
-
-    if (dataRegBody.value != null) {
-        Toast.makeText(LocalContext.current, dataRegBody.value.toString(), Toast.LENGTH_LONG).show()
-    } else {
-        Toast.makeText(LocalContext.current, "Data null", Toast.LENGTH_LONG).show()
-
-    }
-
     Surface(modifier = Modifier.fillMaxSize(), color = lightBackgroundColor) {
         UploadPictureContent(
             name = dataRegBody.value?.name,
@@ -86,7 +81,8 @@ fun UploadPictureActivity(
                 dataRegBody.value = dataRegBody.value?.copy(profilePicture = it)
             },
             pinChange = {
-                dataRegBody.value = dataRegBody.value?.copy(pin = it)
+                dataRegBody.value =
+                    dataRegBody.value?.copy(pin = if (it.isNotEmpty() && it.length == 6) it.toInt() else 0)
             },
             toUploadKtp = {
                 Toast.makeText(
@@ -103,8 +99,8 @@ fun UploadPictureActivity(
 @Composable
 fun UploadPictureContent(
     name: String?,
-    imagePathChange: (String?) -> Unit,
-    pinChange: (Int) -> Unit,
+    imagePathChange: (String) -> Unit,
+    pinChange: (String) -> Unit,
     toUploadKtp: () -> Unit
 ) {
     var imageUri by remember {
@@ -163,7 +159,6 @@ fun UploadPictureContent(
                     .clickable {
                         launcher.launch("image/*")
                     }) {
-                    imagePathChange(imageUri?.path)
 
                     if (imageUri != null) imageUri?.let {
                         if (Build.VERSION.SDK_INT < 28) {
@@ -177,12 +172,14 @@ fun UploadPictureContent(
                         }
 
                         bitmap.value?.let { btm ->
-                            Image(
-                                bitmap = btm.asImageBitmap(),
+                            imagePathChange(EncodeImage64.getEncoded64ImageStringFromBitmap(btm))
+                            AsyncImage(
+                                model = it,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(120.dp)
                                     .clip(CircleShape),
+                                contentScale = ContentScale.Crop
                             )
                         }
                     } else Image(
@@ -205,7 +202,7 @@ fun UploadPictureContent(
                     modifier = Modifier.align(Alignment.Start),
                 )
                 TextFieldComponent(change = {
-                    pinChange(it.toInt())
+                    pinChange(it)
                 })
                 Spacer(modifier = Modifier.height(30.dp))
                 ButtonComponent(text = "Continue") {

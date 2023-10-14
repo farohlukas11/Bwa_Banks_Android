@@ -60,7 +60,12 @@ fun AuthNavigation(
                     navController.currentBackStackEntry?.savedStateHandle?.apply {
                         set("reg_body", it)
                     }
-                    navController.navigate(Screen.UploadPicture.route)
+                    navController.navigate(Screen.UploadPicture.route) {
+                        popUpTo(Screen.SignUp.route) {
+                            inclusive = false
+                            saveState = true
+                        }
+                    }
                 }
             )
         }
